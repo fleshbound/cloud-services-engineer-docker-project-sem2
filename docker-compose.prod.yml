@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   backend:
-    image: ${DOCKER_USER}/momo-store-backend:latest
+    image: ${DOCKER_USER}/docker-project-backend:latest
     container_name: momo-store-backend
     networks:
       - backend-network
@@ -14,7 +14,7 @@ services:
       retries: 3
 
   frontend:
-    image: ${DOCKER_USER}/momo-store-frontend:latest
+    image: ${DOCKER_USER}/docker-project-frontend:latest
     container_name: momo-store-frontend
     networks:
       - frontend_network
@@ -23,7 +23,7 @@ services:
     restart: no
 
   nginx:
-    image: ${DOCKER_USER}/momo-store-gateway:latest
+    image: ${DOCKER_USER}/docker-project-gateway:latest
     container_name: momo-store-gateway
     networks:
       - backend_network
