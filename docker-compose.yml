@@ -1,8 +1,7 @@
 version: '3.9'
 
 x-defaults: &defaults
-  restart: always
-  read_only: true
+  restart: "always"
   env_file: .env
 
 services:
@@ -17,6 +16,7 @@ services:
         GO_VERSION: ${GO_VERSION:-1.21}
     networks:
       - backend_network
+    read_only: true
     ports:
       - "${BACKEND_PORT:-8081}:8081"
     healthcheck:
@@ -39,6 +39,8 @@ services:
       - ALL
     cap_add:
       - NET_BIND_SERVICE
+    tmpfs:
+      - /tmp:size=64M,mode=1777
 
   frontend:
     <<: *defaults
@@ -53,7 +55,7 @@ services:
       - frontend_network
     volumes:
       - frontend_static:/app/static
-    restart: no
+    restart: "no"
 
   nginx:
     <<: *defaults
@@ -92,6 +94,8 @@ services:
     cap_add:
       - NET_BIND_SERVICE
       - CHOWN
+    tmpfs:
+      - /tmp:size=64M,mode=1777
 
 volumes:
   frontend_static:
