@@ -16,7 +16,7 @@ COPY . .
 RUN NODE_OPTIONS=--openssl-legacy-provider npm run build
 
 # Final stage (copy data)
-FROM alpine:3.21
+FROM alpine:3.23
 
 ARG APP_VERSION
 LABEL version="${APP_VERSION}"
