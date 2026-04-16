@@ -1,0 +1,54 @@
+version: '3.9'
+
+services:
+  backend:
+    image: ${DOCKER_USER}/momo-store-backend:latest
+    container_name: momo-store-backend
+    networks:
+      - backend-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/health"]
+      interval: 30s 
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    image: ${DOCKER_USER}/momo-store-frontend:latest
+    container_name: momo-store-frontend
+    networks:
+      - frontend_network
+    volumes:
+      - frontend_static:/app/static
+    restart: no
+
+  nginx:
+    image: ${DOCKER_USER}/momo-store-gateway:latest
+    container_name: momo-store-gateway
+    networks:
+      - backend_network
+      - frontend_network
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_completed_successfully
+    volumes:
+      - frontend_static:/app/static:ro
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  frontend_static:
+    
+networks:
+  backend-network:
+    driver: bridge
+    internal: true
+  frontend-network:
+    driver: bridge
