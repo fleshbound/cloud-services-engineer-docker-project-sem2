@@ -1,5 +1,8 @@
+ARG NODE_VERSION=20
+ARG APP_VERSION=1.0.0
+
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:${NODE_VERSION}-alpine AS builder
 
 WORKDIR /app
 
@@ -14,6 +17,9 @@ RUN NODE_OPTIONS=--openssl-legacy-provider npm run build
 
 # Final stage (copy data)
 FROM alpine:3.19
+
+ARG APP_VERSION
+LABEL version="${APP_VERSION}"
 
 WORKDIR /app
 

@@ -1,5 +1,10 @@
+ARG APP_VERSION=1.0.0
+ARG GO_VERSION=1.21
+
 # Build stage
-FROM golang:1.25-alpine AS builder
+FROM golang:${GO_VERSION}-alpine AS builder
+
+ARG APP_VERSION
 
 WORKDIR /app
 
@@ -10,11 +15,14 @@ RUN go mod download && \
 
 COPY . .
 
-RUN CGO_ENABLED=0 go build -ldflags="-w -s -extldflags '-static'" \
+RUN CGO_ENABLED=0 go build -ldflags="-w -s -X main.version=${APP_VERSION}" \
     -o server ./cmd/main.go
 
 # Final stage (run server)
 FROM alpine:3.19
+
+ARG APP_VERSION
+LABEL version="${APP_VERSION}"
 
 WORKDIR /app
 

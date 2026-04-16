@@ -1,19 +1,26 @@
 version: '3.9'
 
+x-defaults: &defaults
+  restart: always
+  read_only: true
+  env_file: .env
+
 services:
   backend:
-    container_name: momo-store-backend
-    read_only: true
+    <<: *defaults
+    container_name: momo-store-backend-${ENV:-dev}
     build:
       context: ./backend
       dockerfile: Dockerfile
+      args:
+        APP_VERSION: ${BACKEND_VERSION:-latest}
+        GO_VERSION: ${GO_VERSION:-1.21}
     networks:
-      - backend-network
+      - backend_network
     ports:
-      - "8081:8081"
-    restart: always
+      - "${BACKEND_PORT:-8081}:8081"
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:${BACKEND_PORT:-8081}/health"]
       interval: 30s 
       timeout: 5s
       retries: 3
@@ -27,17 +34,21 @@ services:
           cpus: '0.25'
           memory: 256M
       mode: replicated
-      replicas: 2
+      replicas: ${BACKEND_REPLICA_COUNT:-2}
     cap_drop:
       - ALL
     cap_add:
       - NET_BIND_SERVICE
 
   frontend:
-    container_name: momo-store-frontend
+    <<: *defaults
+    container_name: momo-store-frontend-${ENV:-dev}
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        NODE_VERSION: ${NODE_VERSION:-20}
+        APP_VERSION: ${FRONTEND_VERSION:-latest}
     networks:
       - frontend_network
     volumes:
@@ -45,8 +56,8 @@ services:
     restart: no
 
   nginx:
-    container_name: momo-store-gateway
-    read_only: true
+    <<: *defaults
+    container_name: momo-store-gateway-${ENV:-dev}
     build:
       context: ./nginx
       dockerfile: Dockerfile
@@ -54,7 +65,7 @@ services:
       - backend_network
       - frontend_network
     ports:
-      - "80:80"
+      - "${GATEWAY_PORT:-80}:80"
     depends_on:
       backend:
         condition: service_healthy
@@ -62,7 +73,6 @@ services:
         condition: service_completed_successfully
     volumes:
       - frontend_static:/app/static:ro
-    restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost"]
       interval: 30s
