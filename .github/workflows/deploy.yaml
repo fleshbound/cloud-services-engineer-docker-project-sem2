@@ -38,7 +38,7 @@ jobs:
             push: true
             tags: ${{ secrets.DOCKER_USER }}/docker-project-gateway:latest
         - name: Run Trivy backend
-          uses: aquasecurity/trivy-action@0.28.0
+          uses: aquasecurity/trivy-action@0.35.0
           with:
             image-ref: '${{ secrets.DOCKER_USER }}/docker-project-backend:latest'
             format: 'table'
@@ -47,7 +47,7 @@ jobs:
             vuln-type: 'os,library'
             severity: 'CRITICAL,HIGH'
         - name: Run Trivy frontend
-          uses: aquasecurity/trivy-action@0.28.0
+          uses: aquasecurity/trivy-action@0.35.0
           with:
             image-ref: '${{ secrets.DOCKER_USER }}/docker-project-frontend:latest'
             format: 'table'
@@ -56,7 +56,7 @@ jobs:
             vuln-type: 'os,library'
             severity: 'CRITICAL'
         - name: Run Trivy gateway
-          uses: aquasecurity/trivy-action@0.28.0
+          uses: aquasecurity/trivy-action@0.35.0
           with:
             image-ref: '${{ secrets.DOCKER_USER }}/docker-project-gateway:latest'
             format: 'table'
