@@ -7,66 +7,74 @@ on:
 
 jobs:
   build_and_push_to_docker_hub:
-      name: Push Docker image to DockerHub
-      runs-on: ubuntu-latest
-      steps:
-        - name: Check out the repo
-          uses: actions/checkout@v3
-        - name: Set up Docker Buildx
-          uses: docker/setup-buildx-action@v2
-        - name: Login to Docker 
-          uses: docker/login-action@v2
-          with:
-            username: ${{ secrets.DOCKER_USER }}
-            password: ${{ secrets.DOCKER_PASSWORD }}
-        - name: Push Backend to DockerHub
-          uses: docker/build-push-action@v4
-          with:
-            context: ./backend/
-            push: true
-            tags: ${{ secrets.DOCKER_USER }}/docker-project-backend:latest
-        - name: Push Frontend to DockerHub
-          uses: docker/build-push-action@v4
-          with:
-            context: ./frontend/
-            push: true
-            tags: ${{ secrets.DOCKER_USER }}/docker-project-frontend:latest
-        - name: Push Gateway to DockerHub
-          uses: docker/build-push-action@v4
-          with:
-            context: ./nginx/
-            push: true
-            tags: ${{ secrets.DOCKER_USER }}/docker-project-gateway:latest
-        - name: Run Trivy backend
-          uses: aquasecurity/trivy-action@0.35.0
-          with:
-            image-ref: '${{ secrets.DOCKER_USER }}/docker-project-backend:latest'
-            format: 'table'
-            exit-code: '1'
-            ignore-unfixed: true
-            vuln-type: 'os,library'
-            severity: 'CRITICAL,HIGH'
-        - name: Run Trivy frontend
-          uses: aquasecurity/trivy-action@0.35.0
-          with:
-            image-ref: '${{ secrets.DOCKER_USER }}/docker-project-frontend:latest'
-            format: 'table'
-            exit-code: '1'
-            ignore-unfixed: true
-            vuln-type: 'os,library'
-            severity: 'CRITICAL,HIGH'
-        - name: Run Trivy gateway
-          uses: aquasecurity/trivy-action@0.35.0
-          with:
-            image-ref: '${{ secrets.DOCKER_USER }}/docker-project-gateway:latest'
-            format: 'table'
-            exit-code: '1'
-            ignore-unfixed: true
-            vuln-type: 'os,library'
-            severity: 'CRITICAL,HIGH'
+    name: Push Docker image to DockerHub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to Docker 
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Push Backend to DockerHub
+        uses: docker/build-push-action@v4
+        with:
+          context: ./backend/
+          push: true
+          tags: ${{ secrets.DOCKER_USER }}/docker-project-backend:latest
+      - name: Push Frontend to DockerHub
+        uses: docker/build-push-action@v4
+        with:
+          context: ./frontend/
+          push: true
+          tags: ${{ secrets.DOCKER_USER }}/docker-project-frontend:latest
+      - name: Push Gateway to DockerHub
+        uses: docker/build-push-action@v4
+        with:
+          context: ./nginx/
+          push: true
+          tags: ${{ secrets.DOCKER_USER }}/docker-project-gateway:latest
+  
+
+  scan_images_trivy:
+    needs: [build_and_push_to_docker_hub]
+    name: Run Trivy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Trivy backend
+        uses: aquasecurity/trivy-action@0.35.0
+        with:
+          image-ref: '${{ secrets.DOCKER_USER }}/docker-project-backend:latest'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+      - name: Run Trivy frontend
+        uses: aquasecurity/trivy-action@0.35.0
+        with:
+          image-ref: '${{ secrets.DOCKER_USER }}/docker-project-frontend:latest'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+      - name: Run Trivy gateway
+        uses: aquasecurity/trivy-action@0.35.0
+        with:
+          image-ref: '${{ secrets.DOCKER_USER }}/docker-project-gateway:latest'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
 
   run-with-docker-compose:
-    name: Push Docker image to DockerHub
+    needs: [scan_images_trivy]
+    name: Run with Docker Compose
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
