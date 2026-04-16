@@ -1,5 +1,5 @@
 ARG APP_VERSION=1.0.0
-ARG GO_VERSION=1.21
+ARG GO_VERSION=1.25
 
 # Build stage
 FROM golang:${GO_VERSION}-alpine AS builder
