@@ -1,4 +1,4 @@
-FROM nginx:1.22.1-alpine
+FROM nginx:1.30.0-alpine-slim
 
 RUN addgroup -S nginxuser && \
     adduser -S -s /sbin/nologin nginxuser -G nginxuser
