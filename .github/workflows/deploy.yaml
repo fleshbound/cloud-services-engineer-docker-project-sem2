@@ -54,7 +54,7 @@ jobs:
             exit-code: '1'
             ignore-unfixed: true
             vuln-type: 'os,library'
-            severity: 'CRITICAL'
+            severity: 'CRITICAL,HIGH'
         - name: Run Trivy gateway
           uses: aquasecurity/trivy-action@0.35.0
           with:
@@ -63,7 +63,7 @@ jobs:
             exit-code: '1'
             ignore-unfixed: true
             vuln-type: 'os,library'
-            severity: 'CRITICAL'
+            severity: 'CRITICAL,HIGH'
 
   run-with-docker-compose:
     name: Push Docker image to DockerHub

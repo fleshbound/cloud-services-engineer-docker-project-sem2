@@ -19,7 +19,7 @@ RUN CGO_ENABLED=0 go build -ldflags="-w -s -X main.version=${APP_VERSION}" \
     -o server ./cmd/api/
 
 # Final stage (run server)
-FROM alpine:3.19
+FROM alpine:3.21
 
 ARG APP_VERSION
 LABEL version="${APP_VERSION}"
