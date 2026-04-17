@@ -94,3 +94,18 @@ Backend-приложение может быть горизонтально ма
 Результат выполнения команды `docker-compose up -d`:
 
 ![catalog](./docs/catalog.png)
+
+Результат выполнения с `BACKEND_REPLICA_COUNT=3` (frontend работает корректно, аналогично изображению выше):
+
+```sh
+> docker-compose ps
+WARNING: The following deploy sub-keys are not supported and have been ignored: resources.reservations.cpus
+WARNING: The following deploy sub-keys are not supported and have been ignored: resources.reservations.cpus
+                         Name                                       Command                  State                    Ports              
+-----------------------------------------------------------------------------------------------------------------------------------------
+cloud-services-engineer-docker-project-sem2_backend_1    ./server                         Up (healthy)                                   
+cloud-services-engineer-docker-project-sem2_backend_2    ./server                         Up (healthy)                                   
+cloud-services-engineer-docker-project-sem2_backend_3    ./server                         Up (healthy)                                   
+cloud-services-engineer-docker-project-sem2_frontend_1   /bin/sh                          Exit 0                                         
+cloud-services-engineer-docker-project-sem2_nginx_1      /docker-entrypoint.sh ngin ...   Up (healthy)   0.0.0.0:80->80/tcp,:::80->80/tcp
+```

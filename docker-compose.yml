@@ -5,7 +5,6 @@ x-defaults: &defaults
 services:
   backend:
     <<: *defaults
-    container_name: momo-store-backend-${ENV:-dev}
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -42,7 +41,6 @@ services:
 
   frontend:
     <<: *defaults
-    container_name: momo-store-frontend-${ENV:-dev}
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -57,7 +55,6 @@ services:
 
   nginx:
     <<: *defaults
-    container_name: momo-store-gateway-${ENV:-dev}
     build:
       context: ./nginx
       dockerfile: Dockerfile
